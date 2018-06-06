@@ -1,0 +1,51 @@
+body, h1 {
+	margin: 0px;
+}
+.logo {
+	width: 215px;
+	height: 150px;
+}
+#main {
+	width: 1280px;
+	margin: 0 auto;
+}
+
+.accordion {
+	list-style: none;
+	cursor: pointer;
+}
+.accordion:hover {
+	background-color: #ccc;
+}
+.panel {
+	display: none;
+}
+.panel-active {
+	display: block;
+}
+
+.flex-container {
+	display: flex;
+	justify-content: space-between;
+	border: solid 1px #000;
+	width: 500px;
+	margin-bottom: 10px;
+}
+.flex-container > div {
+	border: solid 1px #000;
+	border-width: 0px 1px;
+	padding: 5px 15px;
+}
+.flex-container > div:first-child {
+	border-left: none;
+}
+.flex-container > div:last-child {
+	border-right: none;
+}
+
+.red {
+	background-color: #f00;
+}
+.green {
+	background-color: #0f0;
+}

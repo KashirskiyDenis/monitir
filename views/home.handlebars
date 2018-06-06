@@ -1,3 +1,15 @@
-<h1>Wellcome to main page of site</h1>
+<h1>List objects</h1>
 
-<blockquote>{{ str }}</blockquote>
+<div id="list_objects">
+	{{#each objects}}
+	<div class="accordion">{{this}}</div>
+	<div class="panel">
+		<div class="flex-container">
+			{{{testHelpres 'Door is open'}}}
+			{{{testHelpres 'Fair'}}}
+			{{{testHelpres 'Netword error'}}}
+		</div>
+	</div>
+	{{/each}}
+</div>
+{{> socket}}
