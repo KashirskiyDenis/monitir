@@ -13,26 +13,20 @@ app.use(express.static(__dirname + '/public'));
 
 app.get('/', function (req, res) {
 	let title = "Main page site";
-	res.render("home", {
-		objects: config.get('objects'),
+	let data = JSON.parse(fs.readFileSync(__dirname + '/data/data.json', 'utf8'));
+	res.render("temp", {
+		objects: data,
 		title: title,
 		layout: 'main'
 	});
 });
 
-app.get('/about', function (req, res) {
-	res.type('text/plain');
-	res.send('Main page about');
-});
-
-// пользовательская страница 404
 app.use(function (req, res) {
 	res.type('text/plain');
 	res.status(404);
 	res.send('404 — Не найдено');
 });
 
-// пользовательская страница 500
 app.use(function (err, req, res, next) {
 	console.error(err.stack);
 	res.type('text/plain');
@@ -40,15 +34,10 @@ app.use(function (err, req, res, next) {
 	res.send('500 — Ошибка сервера');
 });
 
-// fs.watchFile(__dirname + '/data/data.json', (curr, prev) => {
-// 	console.log(curr);
-// });
-
 var http = require('http');
 var server = http.createServer(app);
 var WebSocket = require('ws');
 var wss = new WebSocket.Server({ server });
-
 
 server.listen(app.get('port'), function () {
 	console.log('Express запущен на http://localhost:' + app.get('port') + '; нажмите Ctrl+C для завершения.');
@@ -57,12 +46,15 @@ server.listen(app.get('port'), function () {
 // app.listen(app.get('port'), function () {
 // 	console.log('Express запущен на http://localhost:' + app.get('port') + '; нажмите Ctrl+C для завершения.');
 // });
-	
-	
+
+let data = fs.readFileSync(__dirname + '/data/data.txt', 'utf8')
+console.log(data.split(/\r\n/gm));
+
 wss.on('connection', ws => {
 	fs.watchFile(__dirname + '/data/data.json', (curr, prev) => {
-		if (ws.readyState === ws.OPEN)
-			ws.send("Изменён");
+		if (ws.readyState === ws.OPEN) {
+			let data = fs.readFileSync(__dirname + '/data/data.json', 'utf8');
+			ws.send(data);
+		}
 	});
-
 });

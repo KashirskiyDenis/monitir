@@ -1,21 +1,25 @@
 var handlebars = require('express-handlebars')
 
-function getRandomArbitrary(min, max) {	
+function getRandomArbitrary(min, max) {
 	return Math.random() * (max - min) + min;
 }
 
-module.exports = function() {
+module.exports = function () {
 	return handlebars.create({
-		// defaultLayout: 'main',
 		layoutsDir: "views/layouts/",
 		partialsDir: "views/partials/",
 		helpers: {
-			testHelpres: function (str) {
-				if (Math.random() < 0.25) {
-					return `<div class="red">${str}</div>`;
-					} else {
-					return `<div class="green">${str}</div>`;
-				}	
+			sensor: function (data) {
+				let str = "";
+				for (let obj in data) {
+					str += `<div>${obj}</div>
+						<div class="panel-active">
+						<div class="flex-container">`;
+					for (let sensor in data[obj])
+						str += data[obj][sensor] === 1 ? `<div class="green">${sensor}</div>` : `<div class="red">${sensor}</div>`;
+					str += `</div></div>`;
+				}
+				return str;
 			}
 		}
 	});
