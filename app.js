@@ -4,6 +4,12 @@ var config = require('config');
 var fs = require('fs');
 var handlebars = require('helpers')();
 
+var SerialPort = require('serialport');
+var serialPort = new SerialPort('COM15');
+var readLine = new SerialPort.parsers.Readline();
+
+serialPort.pipe(readLine);
+
 app.set('port', config.get('port'));
 
 app.engine('handlebars', handlebars.engine);
@@ -43,18 +49,17 @@ server.listen(app.get('port'), function () {
 	console.log('Express запущен на http://localhost:' + app.get('port') + '; нажмите Ctrl+C для завершения.');
 });
 
-// app.listen(app.get('port'), function () {
-// 	console.log('Express запущен на http://localhost:' + app.get('port') + '; нажмите Ctrl+C для завершения.');
-// });
+// let data = fs.readFileSync(__dirname + '/data/data.txt', 'utf8');
+// console.log(data.split(/\r\n/gm));
 
-let data = fs.readFileSync(__dirname + '/data/data.txt', 'utf8')
-console.log(data.split(/\r\n/gm));
+let data = fs.readFileSync(__dirname + '/data/data.json', 'utf8');
 
 wss.on('connection', ws => {
-	fs.watchFile(__dirname + '/data/data.json', (curr, prev) => {
-		if (ws.readyState === ws.OPEN) {
-			let data = fs.readFileSync(__dirname + '/data/data.json', 'utf8');
-			ws.send(data);
-		}
+	let json = JSON.parse(data);
+
+	readLine.on('data', chunk => {
+		json["obj1"]["sensor1"] = Number.parseInt(chunk);
+		if (ws.readyState === ws.OPEN)
+			ws.send(JSON.stringify(json));
 	});
 });

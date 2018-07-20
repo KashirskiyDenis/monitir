@@ -1,8 +1,8 @@
 {
 	"obj1" : { "sensor1" : 0, "sensor2" : 1, "sensor3" : 0 },
-	"obj2" : { "sensor1" : 1, "sensor2" : 1, "sensor3" : 1 },
+	"obj2" : { "sensor1" : 0, "sensor2" : 1, "sensor3" : 1 },
 	"obj3" : { "sensor1" : 1, "sensor2" : 0, "sensor3" : 1 },
-	"obj4" : { "sensor1" : 1, "sensor2" : 1, "sensor3" : 1 },
+	"obj4" : { "sensor1" : 1, "sensor2" : 0, "sensor3" : 1 },
 	"obj5" : { "sensor1" : 1, "sensor2" : 0, "sensor3" : 1 },
 	"obj6" : { "sensor1" : 1, "sensor2" : 1, "sensor3" : 0 }
 }
