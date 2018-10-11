@@ -1,5 +1,6 @@
 body, h1 {
 	margin: 0px;
+	font-family: monospace;
 }
 .logo {
 	width: 215px;
@@ -12,7 +13,11 @@ body, h1 {
 
 .accordion {
 	list-style: none;
-	cursor: pointer;
+    cursor: pointer;
+    margin: 15px 0px;
+    border-bottom: solid 1px #bbb;
+    font-size: 18px;
+    font-family: monospace;
 }
 .accordion:hover {
 	background-color: #ccc;
@@ -26,15 +31,16 @@ body, h1 {
 
 .flex-container {
 	display: flex;
-	justify-content: space-between;
-	border: solid 1px #000;
-	width: 500px;
-	margin-bottom: 10px;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: flex-start;
+    margin-bottom: 10px;
 }
 .flex-container > div {
-	border: solid 1px #000;
-	border-width: 0px 1px;
 	padding: 5px 15px;
+	margin-right: 5px;
+	margin-bottom: 5px;
+    width: 100px;
 }
 .flex-container > div:first-child {
 	border-left: none;

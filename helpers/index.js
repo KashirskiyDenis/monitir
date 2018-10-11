@@ -12,14 +12,23 @@ module.exports = function () {
 			sensor: function (data) {
 				let str = "";
 				for (let obj in data) {
-					str += `<div>${obj}</div>
-						<div class="panel-active">
+					str += `<div class="accordion">${obj}</div>
+						<div class="panel">
 						<div class="flex-container">`;
-					for (let sensor in data[obj])
-						str += data[obj][sensor] === 1 ? `<div class="green">${sensor}</div>` : `<div class="red">${sensor}</div>`;
+					for (let sensor in data[obj]) {
+						let string = data[obj][sensor].toString();
+						if (string.includes("."))
+							str += `<div class="green">${data[obj][sensor]}</div>`;
+						else
+							str += data[obj][sensor] === 1 ? `<div class="green">${sensor}</div>` : `<div class="red">${sensor}</div>`;
+
+					}
 					str += `</div></div>`;
 				}
 				return str;
+			},
+			testHelpers: function (data) {
+				return `<div class="${Math.random() < 0.8 ? 'green' : 'red'}">${data}</div>`;
 			}
 		}
 	});

@@ -5,13 +5,17 @@ var fs = require('fs');
 var handlebars = require('helpers')();
 
 var SerialPort = require('serialport');
-var serialPort = new SerialPort('COM15');
-var readLine = new SerialPort.parsers.Readline();
+// var serialPort = new SerialPort('COM15');
+// var readLine = new SerialPort.parsers.Readline();
 
-serialPort.pipe(readLine);
+var events = require('events');
+var eventEmitter = new events.EventEmitter();
+
+var state = fs.readFileSync(__dirname + '/data/data.json', 'utf8');
+
+// serialPort.pipe(readLine);
 
 app.set('port', config.get('port'));
-
 app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
 
@@ -19,12 +23,29 @@ app.use(express.static(__dirname + '/public'));
 
 app.get('/', function (req, res) {
 	let title = "Main page site";
-	let data = JSON.parse(fs.readFileSync(__dirname + '/data/data.json', 'utf8'));
+	// let data = JSON.parse(fs.readFileSync(__dirname + '/data/data.json', 'utf8'));
 	res.render("temp", {
-		objects: data,
+		objects: state,
 		title: title,
 		layout: 'main'
 	});
+});
+
+// app.get('/home', function (req, res) {
+// 	let title = "Other page site";
+// 	res.render("home", {
+// 		objects: config.get('objects'),
+// 		title: title,
+// 		layout: 'main'
+// 	});
+// });
+
+app.get('/eth', function (req, res) {
+
+	state["obj1"]["sensor1"] = Number.parseFloat(req.query.tmp);
+	state["obj1"]["sensor2"] = Number.parseFloat(req.query.door);
+
+	eventEmitter.emit('data');
 });
 
 app.use(function (req, res) {
@@ -49,17 +70,20 @@ server.listen(app.get('port'), function () {
 	console.log('Express запущен на http://localhost:' + app.get('port') + '; нажмите Ctrl+C для завершения.');
 });
 
-// let data = fs.readFileSync(__dirname + '/data/data.txt', 'utf8');
-// console.log(data.split(/\r\n/gm));
-
-let data = fs.readFileSync(__dirname + '/data/data.json', 'utf8');
-
 wss.on('connection', ws => {
-	let json = JSON.parse(data);
+	// let json = JSON.parse(data);
 
-	readLine.on('data', chunk => {
-		json["obj1"]["sensor1"] = Number.parseInt(chunk);
+	// readLine.on('data', chunk => {
+	// 	let dataCOM = JSON.parse(chunk);
+
+	// 	json["obj1"]["sensor1"] = dataCOM["tmp"];
+	// 	json["obj1"]["sensor2"] = dataCOM["door"];
+	// 	if (ws.readyState === ws.OPEN)
+	// 		ws.send(JSON.stringify(json));
+	// });
+
+	eventEmitter.on('data', function() {
 		if (ws.readyState === ws.OPEN)
-			ws.send(JSON.stringify(json));
+			ws.send(JSON.stringify(state));
 	});
 });
