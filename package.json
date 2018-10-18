@@ -1,7 +1,7 @@
 {
-  "name": "monitiring",
+  "name": "monitoring",
   "version": "1.0.0",
-  "description": "Monitiring object",
+  "description": "Monitoring object",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,6 +11,7 @@
   "dependencies": {
     "express": "^4.16.3",
     "express-handlebars": "^3.0.0",
+    "mongodb": "^3.1.8",
     "nconf": "^0.10.0",
     "serialport": "^6.2.1",
     "ws": "^5.2.0"

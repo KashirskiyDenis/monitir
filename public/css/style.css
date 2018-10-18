@@ -37,18 +37,13 @@ body, h1 {
     margin-bottom: 10px;
 }
 .flex-container > div {
-	padding: 5px 15px;
-	margin-right: 5px;
 	margin-bottom: 5px;
-    width: 100px;
+	width: 100px;
+	text-align: center;
 }
-.flex-container > div:first-child {
-	border-left: none;
+.flex-container > div > div {
+	padding: 5px 15px;
 }
-.flex-container > div:last-child {
-	border-right: none;
-}
-
 .red {
 	background-color: #f00;
 }

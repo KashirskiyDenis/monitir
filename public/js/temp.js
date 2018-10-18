@@ -3,12 +3,26 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	for (let i of objects) {
 		i.addEventListener("click", function () {
-			this.classList.toggle("active");
 			this.nextElementSibling.classList.toggle("panel-active");
 		});
 	}
 
 	let socket = new WebSocket("ws://localhost:3000");
+
+	let sensors = {
+		tmp: "Температура",
+		door: "Открыта дверь",
+		moveIn: "Датчик движения в контейнере",
+		moveOut: "Датчик движения на улице",
+		fire: "Пожар в помещении",
+		crash: "Авария сети",
+		power: "Мощность сети"
+	};
+
+	let sensorsValue = {
+		door: ["Открыта", "Закрыта"],
+		other: ["Нет", "Есть"],
+	};
 
 	socket.onmessage = function (event) {
 		var incomingMessage = JSON.parse(event.data);
@@ -20,14 +34,19 @@ document.addEventListener('DOMContentLoaded', function () {
 		let index = 0;
 
 		for (let obj in data) {
-			str +=`<div class="flex-container">`;
+			str += `<div class="flex-container">`;
 			for (let sensor in data[obj]) {
-				let string = data[obj][sensor].toString();
-				if (string.includes("."))
+				str += `<div>
+				<div>${ sensors[sensor]}</div>`;
+				if (data[obj][sensor] === "1" || data[obj][sensor] === "0") {
+					if (sensor === "door")
+					str += data[obj][sensor] === "0" ? `<div class="red">${sensorsValue.door[0]}</div>` : `<div class="green">${sensorsValue.door[1]}</div>`;
+					else
+						str += data[obj][sensor] === "0" ? `<div class="green">${sensorsValue.other[0]}</div>` : `<div class="red">${sensorsValue.other[1]}</div>`;
+				} else {
 					str += `<div class="green">${data[obj][sensor]}</div>`;
-				else
-					str += data[obj][sensor] === 1 ? `<div class="green">${sensor}</div>` : `<div class="red">${sensor}</div>`;
-
+				}
+				str += `</div>`;
 			}
 			str += `</div>`;
 			objects[index].nextElementSibling.innerHTML = str;
