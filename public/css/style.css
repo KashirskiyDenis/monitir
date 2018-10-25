@@ -1,6 +1,6 @@
 body, h1 {
 	margin: 0px;
-	font-family: monospace;
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 .logo {
 	width: 215px;
@@ -33,13 +33,14 @@ body, h1 {
 	display: flex;
     flex-wrap: wrap;
     justify-content: space-around;
-    align-items: flex-start;
+    align-items: flex-end;
     margin-bottom: 10px;
 }
 .flex-container > div {
 	margin-bottom: 5px;
-	width: 100px;
+	width: 150px;
 	text-align: center;
+	font-size: 12px;
 }
 .flex-container > div > div {
 	padding: 5px 15px;
@@ -49,4 +50,20 @@ body, h1 {
 }
 .green {
 	background-color: #0f0;
+}
+
+canvas {
+	border: solid 1px #000;
+}
+
+table {
+	border-collapse: collapse;
+	width: fit-content;
+	margin-top: 10px;
+}
+th, td {
+	border: 1px solid #000;
+}
+tr:hover {
+	background-color: #bbb;
 }

@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		});
 	}
 
-	let socket = new WebSocket("ws://localhost:3000");
+	let socket = new WebSocket("ws://213.80.162.30:3000");
 
 	let sensors = {
 		tmp: "Температура",
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function () {
 				<div>${ sensors[sensor]}</div>`;
 				if (data[obj][sensor] === "1" || data[obj][sensor] === "0") {
 					if (sensor === "door")
-					str += data[obj][sensor] === "0" ? `<div class="red">${sensorsValue.door[0]}</div>` : `<div class="green">${sensorsValue.door[1]}</div>`;
+						str += data[obj][sensor] === "0" ? `<div class="red">${sensorsValue.door[0]}</div>` : `<div class="green">${sensorsValue.door[1]}</div>`;
 					else
 						str += data[obj][sensor] === "0" ? `<div class="green">${sensorsValue.other[0]}</div>` : `<div class="red">${sensorsValue.other[1]}</div>`;
 				} else {
@@ -48,11 +48,15 @@ document.addEventListener('DOMContentLoaded', function () {
 				}
 				str += `</div>`;
 			}
-			str += `</div>`;
+			str += `</div>
+					<div>
+						<a href="/graphics/${obj}">Графики</a>
+					</div>
+				</div>`;
 			objects[index].nextElementSibling.innerHTML = str;
 			str = "";
 			index++;
 		}
 	}
-});
 
+});

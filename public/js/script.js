@@ -6,5 +6,5 @@ document.addEventListener('DOMContentLoaded', function () {
 			this.classList.toggle("active");
 			this.nextElementSibling.classList.toggle("panel-active");
 		});
-    }
+	}
 });

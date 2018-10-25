@@ -43,12 +43,30 @@ module.exports = function () {
 						}
 						str += `</div>`;
 					}
-					str += `</div></div>`;
+					str += `</div>
+						<div>
+							<a href="/graphics/${obj}">Графики</a>
+						</div>
+					</div>`;
 				}
 				return str;
 			},
 			testHelpers: function (data) {
 				return `<div class="${Math.random() < 0.8 ? 'green' : 'red'}">${data}</div>`;
+			},
+			graphics: function (data) {
+				let idObject = data.idObject;
+				let array = data.data;
+				let str = "";
+				for (let element of array) {
+					str += `<h2>${element}</h2>
+					<canvas id="graphic_${element}" data-idObject="${idObject}" data-typeSensor="${element}" width="800" height="150"></canvas>
+					<div>
+						<button class="show_table">Показать таблицу</button>
+						<table class="panel" id="table_${element}" data-typeSensor="${element}"></table>
+					</div>`;
+				}
+				return str;
 			}
 		}
 	});

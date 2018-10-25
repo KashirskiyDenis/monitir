@@ -17,16 +17,12 @@ var getState = function (updateState) {
 	let change = false;
 	let id = updateState.id;
 
-	// console.log(state);
-
 	for (let prop in state[id]) {
 		if (updateState[prop] && state[id][prop] != updateState[prop]) {
 			change = true;
 			state[id][prop] = updateState[prop];
 		}
 	}
-
-	// console.log(state);
 
 	if (change) {
 		fs.writeFile(__dirname + '/data/data.json', JSON.stringify(state), (err) => {
@@ -64,17 +60,21 @@ app.get('/home', function (req, res) {
 
 var eventEmitter = new events.EventEmitter();
 
+eventEmitter.on('data', function () {
+	for (let key in clients) {
+		if (clients[key].readyState === clients[key].OPEN)
+			clients[key].send(JSON.stringify(state));
+	}
+});
+
 app.get('/eth', function (req, res) {
-	let dateTime = new Date();
+	let dateTime = Date.now();
 
 	getState(req.query);
 
-	// state[objId]["tmp"] = Number.parseFloat(req.query.tmp);
-	// state[objId]["door"] = Number.parseFloat(req.query.door);
-
 	MongoClient.connect(config.get('mongodb'), { useNewUrlParser: true }, function (err, client) {
 
-		var db = client.db('monitoring');
+		let db = client.db('monitoring');
 
 		let tmp = {
 			idObject: req.query.id,
@@ -94,7 +94,7 @@ app.get('/eth', function (req, res) {
 			if (err) {
 				console.log(err);
 			}
-			// console.log(result.ops);
+			console.log(result.ops);
 			client.close();
 		});
 	});
@@ -102,10 +102,49 @@ app.get('/eth', function (req, res) {
 	eventEmitter.emit('data');
 });
 
+app.get('/graphics/:idObject', function (req, res) {
+	let title = "Graphics - " + req.params.idObject;
+
+	MongoClient.connect(config.get('mongodb'), { useNewUrlParser: true }, function (err, client) {
+		let db = client.db('monitoring');
+		let result = db.collection('log').distinct("type", { idObject: req.params.idObject });
+
+		result.then(data => {
+			res.render("graphics", {
+				data: { data: data, idObject: req.params.idObject },
+				idObject: req.params.idObject,
+				title: title,
+				layout: 'main'
+			});
+			client.close();
+		}).catch(err => {
+			console.log(err);
+		});
+	});
+});
+
+app.get('/sensor/:idObject/:period', function (req, res) {
+	let time = Number.parseFloat(req.params.period);
+	let period = Date.now() - time * 24 * 60 * 60 * 1000;
+
+	MongoClient.connect(config.get('mongodb'), { useNewUrlParser: true }, function (err, client) {
+		let db = client.db('monitoring');
+		let result = db.collection('log').find({
+			idObject: req.params.idObject,
+			dateTime: { $gte: period }
+		});
+		result.toArray().then(array => {
+			res.json(array);
+		}).catch(err => {
+			console.log(err);
+		});
+	});
+});
+
 app.use(function (req, res) {
 	res.type('text/plain');
 	res.status(404);
-	res.send('404 — Не найдено');
+	res.send('404 — Страница не найдена');
 });
 
 app.use(function (err, req, res, next) {
@@ -139,13 +178,6 @@ wss.on('connection', ws => {
 
 	let idWS = Math.random();
 	clients[idWS] = ws;
-
-	eventEmitter.on('data', function () {
-		for (let key in clients) {
-			if (clients[key].readyState === clients[key].OPEN)
-				clients[key].send(JSON.stringify(state));
-		}
-	});
 
 	ws.on('close', function () {
 		delete clients[idWS];
