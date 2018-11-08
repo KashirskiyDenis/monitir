@@ -45,7 +45,7 @@ module.exports = function () {
 					}
 					str += `</div>
 						<div>
-							<a href="/graphics/${obj}">Графики</a>
+							<a href="/graphics/${obj}">Graphics</a>
 						</div>
 					</div>`;
 				}
@@ -59,10 +59,20 @@ module.exports = function () {
 				let array = data.data;
 				let str = "";
 				for (let element of array) {
-					str += `<h2>${element}</h2>
-					<canvas id="graphic_${element}" data-idObject="${idObject}" data-typeSensor="${element}" width="800" height="150"></canvas>
+					str += `<div class="graphic">
+						<h2 class="graphic_title">${element}</h2>
+						<canvas class="graphic_canvas" id="graphic_${element}" data-idObject="${idObject}" data-typeSensor="${element}" width="800" height="150"></canvas>
+						<div class="graphic_value">
+							<div>Max: 00.00</div>
+							<div>Min: 00.00</div>
+						</div>
+						<div class="graphic_date">
+							<div>Day of the week, DD month YYYY г., HH:MM:SS</div>
+							<div>Day of the week, DD month YYYY г., HH:MM:SS</div>
+						</div>
+					</div>
 					<div>
-						<button class="show_table">Показать таблицу</button>
+						<button class="show_table">Показать в виде таблицы</button>
 						<table class="panel" id="table_${element}" data-typeSensor="${element}"></table>
 					</div>`;
 				}

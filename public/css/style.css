@@ -14,7 +14,7 @@ body, h1 {
 .accordion {
 	list-style: none;
     cursor: pointer;
-    margin: 15px 0px;
+    margin: 5px 0px;
     border-bottom: solid 1px #bbb;
     font-size: 18px;
     font-family: monospace;
@@ -34,7 +34,6 @@ body, h1 {
     flex-wrap: wrap;
     justify-content: space-around;
     align-items: flex-end;
-    margin-bottom: 10px;
 }
 .flex-container > div {
 	margin-bottom: 5px;
@@ -66,4 +65,42 @@ th, td {
 }
 tr:hover {
 	background-color: #bbb;
+}
+
+.graphic {
+	display: grid;
+	grid-template-areas: "header header"
+		"graphic value"
+		"footer footer";
+	grid-template-columns: 800px 1fr;
+	grid-column-gap: 10px;
+	grid-row-gap: 10px;
+	width: 910px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+.graphic_title {
+	grid-area: header;
+	text-align: center;
+	margin: 0px;
+}
+.graphic_canvas {
+	grid-area: graphic;
+}
+.graphic_value {
+	grid-area: value;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: center;
+}
+.graphic_date {
+	grid-area: footer;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+#list_graphics {
+	margin-top: 10px;
 }
