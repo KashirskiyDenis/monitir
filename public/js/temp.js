@@ -7,10 +7,11 @@ document.addEventListener('DOMContentLoaded', function () {
 		});
 	}
 
-	let socket = new WebSocket("ws://213.80.162.30:3000");
+	// let socket = new WebSocket("ws://213.80.162.30:3000");
+	let socket = new WebSocket("ws://aortpc.ru:3000");
 
 	let sensors = {
-		tmp: "Температура",
+		temperature: "Температура",
 		door: "Открыта дверь",
 		moveIn: "Датчик движения в контейнере",
 		moveOut: "Датчик движения на улице",
@@ -20,8 +21,8 @@ document.addEventListener('DOMContentLoaded', function () {
 	};
 
 	let sensorsValue = {
-		door: ["Открыта", "Закрыта"],
-		other: ["Нет", "Есть"],
+		door: ["Закрыта", "Открыта"],
+		other: ["Нет", "Есть"]
 	};
 
 	socket.onmessage = function (event) {
@@ -40,11 +41,17 @@ document.addEventListener('DOMContentLoaded', function () {
 				<div>${ sensors[sensor]}</div>`;
 				if (data[obj][sensor] === "1" || data[obj][sensor] === "0") {
 					if (sensor === "door")
-						str += data[obj][sensor] === "0" ? `<div class="red">${sensorsValue.door[0]}</div>` : `<div class="green">${sensorsValue.door[1]}</div>`;
+						str += data[obj][sensor] === "0" ? `<div class="green">${sensorsValue.door[0]}</div>` : `<div class="red">${sensorsValue.door[1]}</div>`;
 					else
 						str += data[obj][sensor] === "0" ? `<div class="green">${sensorsValue.other[0]}</div>` : `<div class="red">${sensorsValue.other[1]}</div>`;
 				} else {
-					str += `<div class="green">${data[obj][sensor]}</div>`;
+					if (sensor === "power") {
+						let tmp = data[obj][sensor];
+						tmp = Number.parseFloat(tmp) * 330;
+						tmp = Math.ceil(tmp * 100) / 100;
+						str += `<div class="green">${tmp}</div>`;
+					} else
+						str += `<div class="green">${data[obj][sensor]}</div>`;
 				}
 				str += `</div>`;
 			}

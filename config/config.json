@@ -1,6 +1,6 @@
 {
 	"port": 3000,
-	"mongodb" : "mongodb://localhost:27017",
+	"mongodb" : "mongodb://10.130.32.47:27017",
 	"objects": [
 		"Астрахань",
 		"В. Баскунчак",

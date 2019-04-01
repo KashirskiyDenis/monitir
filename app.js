@@ -6,10 +6,6 @@ var MongoClient = require('mongodb').MongoClient;
 var events = require('events');
 var WebSocket = require('ws');
 
-// var SerialPort = require('serialport');
-// var serialPort = new SerialPort('COM15');
-// var readLine = new SerialPort.parsers.Readline();
-
 var app = express();
 var state = JSON.parse(fs.readFileSync(__dirname + '/data/data.json', 'utf8'));
 
@@ -32,7 +28,6 @@ var getState = function (updateState) {
 		});
 	}
 };
-// serialPort.pipe(readLine);
 
 app.set('port', config.get('port'));
 app.engine('handlebars', handlebars.engine);
@@ -41,7 +36,7 @@ app.set('view engine', 'handlebars');
 app.use(express.static(__dirname + '/public'));
 
 app.get('/', function (req, res) {
-	let title = "Main page site";
+	let title = "Состояния объектов";
 	res.render("temp", {
 		objects: state,
 		title: title,
@@ -71,30 +66,30 @@ app.get('/eth', function (req, res) {
 	let dateTime = Date.now();
 
 	getState(req.query);
+	
+	console.log(req.query);
 
 	MongoClient.connect(config.get('mongodb'), { useNewUrlParser: true }, function (err, client) {
-
 		let db = client.db('monitoring');
+		let document = [];
 
-		let tmp = {
-			idObject: req.query.id,
-			type: "Temperature",
-			value: req.query.tmp,
-			dateTime: dateTime
-		};
+		for (let tmp in req.query) {
+			if (tmp === "id")
+				continue;
 
-		let door = {
-			idObject: req.query.id,
-			type: "Door",
-			value: req.query.door,
-			dateTime: dateTime
-		};
+			document.push({
+				idObject: req.query.id,
+				type: tmp,
+				value: req.query[tmp],
+				dateTime: dateTime
+			});
+		}
 
-		db.collection('log').insertMany([tmp, door], function (err, result) {
+		db.collection('log').insertMany(document, function (err, result) {
 			if (err) {
 				console.log(err);
 			}
-			console.log(result.ops);
+			// console.log(result.ops);
 			client.close();
 		});
 	});
@@ -103,7 +98,7 @@ app.get('/eth', function (req, res) {
 });
 
 app.get('/graphics/:idObject', function (req, res) {
-	let title = "Graphics - " + req.params.idObject;
+	let title = "Графики - " + req.params.idObject;
 
 	MongoClient.connect(config.get('mongodb'), { useNewUrlParser: true }, function (err, client) {
 		let db = client.db('monitoring');
@@ -165,17 +160,6 @@ server.listen(app.get('port'), function () {
 var clients = {};
 
 wss.on('connection', ws => {
-	// let json = JSON.parse(data);
-
-	// readLine.on('data', chunk => {
-	// 	let dataCOM = JSON.parse(chunk);
-
-	// 	json["obj1"]["sensor1"] = dataCOM["tmp"];
-	// 	json["obj1"]["sensor2"] = dataCOM["door"];
-	// 	if (ws.readyState === ws.OPEN)
-	// 		ws.send(JSON.stringify(json));
-	// });
-
 	let idWS = Math.random();
 	clients[idWS] = ws;
 

@@ -49,8 +49,16 @@ document.addEventListener('DOMContentLoaded', function () {
 		second: 'numeric'
 	};
 
+	let rang = {
+		door: ["Close", "Open"],
+		moveIn: ["No movement", "Movement"],
+		moveOut: ["No movement", "Movement"],
+		fire: ["No fire", "Fire"],
+		crash: ["No crash", "Crash"]
+	};
+
 	for (let canvas of canvases) {
-		let tmp = canvas.dataset.typesensor.toLowerCase();
+		let tmp = canvas.dataset.typesensor;
 		graphics[tmp].ctx = canvas.getContext("2d");
 		graphics[tmp].data = [];
 		graphics[tmp].value = canvas.nextElementSibling;
@@ -58,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	}
 
 	for (let table of tables) {
-		let tmp = table.dataset.typesensor.toLowerCase();
+		let tmp = table.dataset.typesensor;
 		graphics[tmp].table = table;
 	}
 
@@ -67,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			this.innerHTML = this.innerHTML === "Показать в виде таблицы" ? "Скрыть таблицу" : "Показать в виде таблицы";
 			this.nextElementSibling.classList.toggle("panel-active");
 		});
-	}	
+	}
 
 	document.getElementById("day").addEventListener("click", getGraphics);
 	document.getElementById("week").addEventListener("click", getGraphics);
@@ -85,15 +93,23 @@ document.addEventListener('DOMContentLoaded', function () {
 				graphics[key].data = [];
 				graphics[key].max = -Infinity;
 				graphics[key].min = Infinity;
+				graphics[key].avg = 0;
 			}
 
 			for (let i = 0; i < response.length; i++) {
-				let tmp = response[i].type.toLowerCase();
+				let tmp = response[i].type;
 				response[i].value = Number.parseFloat(response[i].value);
 				graphics[tmp].data.push(response[i]);
 				if (graphics[tmp].max < response[i].value) graphics[tmp].max = response[i].value;
 				if (graphics[tmp].min > response[i].value) graphics[tmp].min = response[i].value;
+				graphics[tmp].avg += response[i].value;
 			}
+
+			graphics["temperature"].avg /= graphics["temperature"].data.length;
+			graphics["temperature"].avg = Math.ceil(graphics["temperature"].avg * 100) / 100;
+
+			graphics["power"].avg /= graphics["power"].data.length;
+			graphics["power"].avg = Math.ceil(graphics["power"].avg * 100) / 100;
 
 			for (let value in graphics) {
 				if (graphics[value].ctx === undefined)
@@ -116,12 +132,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
 				let max = graphics[value].max;
 				let min = graphics[value].min;
+				let avg = graphics[value].avg;
 
 				for (let i = 0; i < length; i++) {
 					let x = i * (800 / length);
 					let y = Number.parseFloat(graphics[value].data[i].value);
 					let date = new Date(graphics[value].data[i].dateTime);
-					tableInner += `<tr><td>${y}</td><td>${date}</td></tr>`;
+					if (value == "power")
+						tableInner += `<tr><td>${Math.ceil(y * 330 * 100) / 100}</td><td>${date}</td></tr>`;
+					else
+						tableInner += `<tr><td>${y}</td><td>${date}</td></tr>`;
 
 					if (value === "temperature" || value === "power") {
 						y = (0.125 + max - y) / (Math.abs(max) - Math.abs(min) + 0.25) * 150;
@@ -135,12 +155,17 @@ document.addEventListener('DOMContentLoaded', function () {
 				graphics[value].ctx.stroke();
 				graphics[value].table.innerHTML = tableInner;
 
-				if (value === "temperature" || value === "power") {
-					graphics[value].value.children[0].innerHTML = `Max: ${max} ${value === "temperature" ? "&#8451;" : "W"}`;
-					graphics[value].value.children[1].innerHTML = `Min: ${min} ${value === "temperature" ? "&#8451;" : "W"}`;
+				if (value === "temperature") {
+					graphics[value].value.children[0].innerHTML = `Max: ${max} &#8451;`;
+					graphics[value].value.children[1].innerHTML = `Avg: ${avg} &#8451;`;
+					graphics[value].value.children[2].innerHTML = `Min: ${min} &#8451;`;
+				} else if (value === "power") {
+					graphics[value].value.children[0].innerHTML = `Max: ${Math.ceil(max * 330 * 100) / 100} W`;
+					graphics[value].value.children[1].innerHTML = `Avg: ${Math.ceil(avg * 330 * 100) / 100} W`;
+					graphics[value].value.children[2].innerHTML = `Min: ${Math.ceil(min * 330 * 100) / 100} W`;
 				} else {
-					graphics[value].value.children[0].innerHTML = `${value === "door" ? "Close" : "No movement"}`;
-					graphics[value].value.children[1].innerHTML = `${value === "door" ? "Open" : "Movement"}`;
+					graphics[value].value.children[0].innerHTML = `${rang[value][0]}`;
+					graphics[value].value.children[1].innerHTML = `${rang[value][1]}`;
 				}
 			}
 		}).catch(error => {
